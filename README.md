@@ -18,30 +18,24 @@ Function Add-SecurityGroupToSite {
         [string]$SiteURL,
         [string]$GroupName
     )
-
     # Setup the context
     $Ctx = New-Object Microsoft.SharePoint.Client.ClientContext($SiteURL)
     $Ctx.Credentials = New-Object Microsoft.SharePoint.Client.SharePointOnlineCredentials($Cred.Username, $Cred.Password)
-
     # Get the web
     $Web = $Ctx.Web
     $Ctx.Load($Web)
     $Ctx.ExecuteQuery()
-
     # Create or get the security group
     $GroupCreationInfo = New-Object Microsoft.SharePoint.Client.GroupCreationInformation
     $GroupCreationInfo.Title = $GroupName
     $Group = $Web.SiteGroups.Add($GroupCreationInfo)
     $Ctx.Load($Group)
     $Ctx.ExecuteQuery()
-
     # Add the group to the web's groups collection
     $Web.AssociatedGroups.Add($Group)
     $Ctx.ExecuteQuery()
-
     Write-Host "Added security group $GroupName to site $SiteURL"
 }
-
 # Loop through each site collection and add the security group
 ForEach($Site in $Sites) {
     Write-Host -f Yellow "Processing Site: $($Site.Url)"
